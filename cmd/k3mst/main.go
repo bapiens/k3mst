@@ -1,15 +1,23 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/bapiens/k3mst/internal/diagnostics"
+
 	"github.com/gorilla/mux"
 
 	"net/http"
 	"os"
 )
+
+type serverConf struct {
+	port   string
+	router http.Handler
+	name   string
+}
 
 func main() {
 	log.Print("Starting the application...")
@@ -27,38 +35,46 @@ func main() {
 	router := mux.NewRouter()
 	router.HandleFunc("/", hello)
 
-	possibleErrors := make(chan error, 2) //( 2 is beacuse there are 2 servers listnening ot two ports)
+	possibleErrors := make(chan error, 2) //( 2 is beacuse there are 2 servers listnening ot two ports take a look at channels)
 
-	go func() {
-		log.Print("Application is in state of preparation to serve...")
+	diagnostics := diagnostics.NewDiagnostics()
 
-		server := &http.Server{
-			Addr:    ":" + blPort,
-			Handler: router,
-		}
+	configurations := []serverConf{
+		{
+			port:   blPort,
+			router: router,
+			name:   "application server",
+		},
+		{
 
-		err := server.ListenAndServe()
-		//server.Shutdown()
-		if err != nil {
-			possibleErrors <- err
-		}
-	}()
-
-	log.Print("Diagnostics are in state of preparation to serve...")
-	diagRoutes := diagnostics.NewDiagnostics()
-
-	diagserver := &http.Server{
-		Addr:    ":" + diagPort,
-		Handler: diagRoutes,
+			port:   diagPort,
+			router: diagnostics,
+			name:   "diagnostics server",
+		},
 	}
 
-	err := diagserver.ListenAndServe()
-	if err != nil {
-		possibleErrors <- err
+	servers := make([]*http.Server, 2)
+
+	for i, c := range configurations {
+		go func(conf serverConf, i int) {
+			log.Printf("The %s is preparing to handle connections...", conf.name)
+			servers[i] = &http.Server{
+				Addr:    ":" + conf.port,
+				Handler: conf.router,
+			}
+			err := servers[i].ListenAndServe()
+			if err != nil {
+				possibleErrors <- err
+			}
+		}(c, i)
 	}
 
 	select {
 	case err := <-possibleErrors:
+		for _, s := range servers {
+
+			s.Shutdown(context.Background())
+		}
 		log.Fatal(err)
 	}
 }
