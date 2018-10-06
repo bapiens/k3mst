@@ -34,7 +34,7 @@ workflow: prod
 image:
   ## Docker Registry/Hub image name and tag
   ##
-  registry: docker.io/bapiens
+  registry: docker.io/webdeva
   name: k3mst
   tag: 0.0.1
 
