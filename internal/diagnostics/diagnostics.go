@@ -10,7 +10,7 @@ import (
 func NewDiagnostics() *mux.Router {
 	router := mux.NewRouter()
 	router.HandleFunc("/healthz", healthz)
-	router.HandleFunc("/info", ready)
+	router.HandleFunc("/readyz", ready)
 	return router
 }
 

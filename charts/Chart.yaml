@@ -1,0 +1,10 @@
+name: k3mst
+description: A Helm charts for Kubernetes application
+version: 0.0.1
+home: https://k8s.community/
+sources:
+  - https://github.com/bapiens/k3mst
+maintainers:
+  - name: Testing Author
+    email: justan@dummy.email.ko.ne
+engine: gotpl
