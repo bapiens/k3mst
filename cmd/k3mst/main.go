@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/bapiens/k3mst/internal/diagnostics"
+	diagnostics "github.com/bapiens/k3mst/internal/diagnostics"
 	"github.com/gorilla/mux"
 
 	"net/http"
@@ -23,9 +23,9 @@ func main() {
 		}
 	}()
 
-	diagnostics = diagnostics.NewDiagnostics()
+	diagRoutes := diagnostics.NewDiagnostics()
 
-	err := http.ListenAndServe(":8585", diagnostics)
+	err := http.ListenAndServe(":8585", diagRoutes)
 	if err != nil {
 		log.Fatal(err)
 	}
