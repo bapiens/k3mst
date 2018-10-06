@@ -23,24 +23,41 @@ func main() {
 	if len(diagPort) == 0 {
 		log.Fatal("The diagnostics port should be set")
 	}
+
 	router := mux.NewRouter()
 	router.HandleFunc("/", hello)
 
 	go func() {
-		err := http.ListenAndServe(":8080", router)
+		log.Print("Application is in state of preparation to serve...")
+
+		server := &http.Server{
+			Addr:    ":" + blPort,
+			Handler: router,
+		}
+
+		err := server.ListenAndServe()
+		//server.Shutdown()
 		if err != nil {
 			log.Fatal(err)
 		}
 	}()
 
+	log.Print("Diagnostics are in state of preparation to serve...")
 	diagRoutes := diagnostics.NewDiagnostics()
 
-	err := http.ListenAndServe(":8585", diagRoutes)
+	diagserver := &http.Server{
+		Addr:    ":" + diagPort,
+		Handler: diagRoutes,
+	}
+
+	err := diagserver.ListenAndServe()
 	if err != nil {
 		log.Fatal(err)
 	}
+
 }
 
 func hello(w http.ResponseWriter, r *http.Request) {
+	log.Print("The hello handler was called")
 	fmt.Fprint(w, http.StatusText(http.StatusOK))
 }
