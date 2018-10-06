@@ -27,6 +27,8 @@ func main() {
 	router := mux.NewRouter()
 	router.HandleFunc("/", hello)
 
+	possibleErrors := make(chan error, 2) //( 2 is beacuse there are 2 servers listnening ot two ports)
+
 	go func() {
 		log.Print("Application is in state of preparation to serve...")
 
@@ -38,7 +40,7 @@ func main() {
 		err := server.ListenAndServe()
 		//server.Shutdown()
 		if err != nil {
-			log.Fatal(err)
+			possibleErrors <- err
 		}
 	}()
 
@@ -52,9 +54,13 @@ func main() {
 
 	err := diagserver.ListenAndServe()
 	if err != nil {
-		log.Fatal(err)
+		possibleErrors <- err
 	}
 
+	select {
+	case err := <-possibleErrors:
+		log.Fatal(err)
+	}
 }
 
 func hello(w http.ResponseWriter, r *http.Request) {
