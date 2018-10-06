@@ -8,11 +8,21 @@ import (
 	"github.com/gorilla/mux"
 
 	"net/http"
+	"os"
 )
 
 func main() {
-	log.Print("Ko sta")
+	log.Print("Starting the application...")
 
+	blPort := os.Getenv("PORT")
+	if len(blPort) == 0 {
+		log.Fatal("The app port should be set")
+	}
+
+	diagPort := os.Getenv("DIAG_PORT")
+	if len(diagPort) == 0 {
+		log.Fatal("The diagnostics port should be set")
+	}
 	router := mux.NewRouter()
 	router.HandleFunc("/", hello)
 
