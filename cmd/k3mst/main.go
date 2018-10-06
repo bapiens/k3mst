@@ -4,16 +4,14 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"net/http"
+	"os"
 	"os/signal"
 	"syscall"
 	"time"
 
 	"github.com/bapiens/k3mst/internal/diagnostics"
-
 	"github.com/gorilla/mux"
-
-	"net/http"
-	"os"
 )
 
 type serverConf struct {
@@ -46,13 +44,13 @@ func main() {
 		{
 			port:   blPort,
 			router: router,
-			name:   "application server",
+			name:   "Application server",
 		},
 		{
 
 			port:   diagPort,
 			router: diagnostics,
-			name:   "diagnostics server",
+			name:   "Diagnostics server",
 		},
 	}
 
