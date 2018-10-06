@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 
-	diagnostics "github.com/bapiens/k3mst/internal/diagnostics"
+	"github.com/bapiens/k3mst/internal/diagnostics"
 	"github.com/gorilla/mux"
 
 	"net/http"
