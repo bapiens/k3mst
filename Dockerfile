@@ -1,7 +1,7 @@
 # Stage 1. Build the binary
 FROM golang:1.11
 
-# add a non-privileged user
+# add a non-privileged user myapp
 RUN useradd -u 10001 myapp
 
 RUN mkdir -p /go/src/github.com/bapiens/k3mst
