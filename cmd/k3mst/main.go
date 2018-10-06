@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/bapiens/k3mst/internal/diagnostics"
+	"github.com/bapiens/k3mst/internal/version"
 	"github.com/gorilla/mux"
 )
 
@@ -21,7 +22,8 @@ type serverConf struct {
 }
 
 func main() {
-	log.Print("Starting the application...")
+	log.Printf("Starting the application, v%s...", version.Version)
+	//log.Print("Starting the application...")
 
 	blPort := os.Getenv("PORT")
 	if len(blPort) == 0 {
